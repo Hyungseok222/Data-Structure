@@ -1,0 +1,42 @@
+// 원하는 수 입력시, 랜덤 수 배열에서 그 수가 저장된 위치 출력 (순차검색 - 선형)
+
+#include<iostream>
+#include<stdlib.h>
+#include<time.h>
+
+using namespace std;
+
+void sortArray(int* ap, int num);
+
+int main() {
+	int array[10];
+	srand(time(NULL));
+	for (int i = 0; i < 10; i++) {
+		array[i] = rand()%20;
+	}
+	for (int j = 0; j < 10; j++) {
+		cout << array[j] << "   ";
+	}
+	cout << endl;
+	int num;
+	cout << "#검색할 정수를 입력하시오:";
+	cin >> num;
+	sortArray(array, num);
+}
+
+void sortArray(int* ap, int num) {
+	for (int i = 0; i < 10; i++) {
+		if (ap[i] == num) {
+			cout << num << "은 " << i << "번째 방에 있습니다" << endl;
+			
+		}
+		else if (i == 9) {
+			if (ap[i] != num) {
+				cout << num << "은 존재하지 않습니다" << endl;
+			}
+		}
+		else {
+			continue;
+		}
+	}
+}
