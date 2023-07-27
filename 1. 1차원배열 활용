@@ -1,4 +1,5 @@
-// 원하는 수 입력시, 랜덤 수 배열에서 그 수가 저장된 위치 출력 (순차검색 - 선형)
+// 숫자 하나입력시, '랜덤숫자(1~20)가 10개 있는 배열'에서 입력한 수가 있는지 확인하고, 저장된 위치 출력 (순차검색 - 선형)
+// 여기서는 중복 검색이 아닌, 단일 검색이 총 5번 진행됨.
 
 #include<iostream>
 #include<stdlib.h>
@@ -6,37 +7,105 @@
 
 using namespace std;
 
-void sortArray(int* ap, int num);
+void searchArray(int* ap, int num, int size);
 
 int main() {
 	int array[10];
 	srand(time(NULL));
 	for (int i = 0; i < 10; i++) {
-		array[i] = rand()%20;
+		array[i] = rand()%20 + 1;
 	}
-	for (int j = 0; j < 10; j++) {
-		cout << array[j] << "   ";
+
+	int num; // 검색할 데이터
+	unsigned int size; // 배열의 크기 
+	size = sizeof(array) / sizeof(array[0]); // 여기서는 10
+
+	for (int j = 0; j < 5; j++) {
+		cout << "#검색할 정수를 입력하시오:";
+		cin >> num;
+		searchArray(array, num, size);
 	}
-	cout << endl;
-	int num;
-	cout << "#검색할 정수를 입력하시오:";
-	cin >> num;
-	sortArray(array, num);
+	
 }
 
-void sortArray(int* ap, int num) {
-	for (int i = 0; i < 10; i++) {
+void searchArray(int* ap, int num, int size) {
+	int position = -1;
+	for (int i = 0; i < size; i++) {
 		if (ap[i] == num) {
-			cout << num << "은 " << i << "번째 방에 있습니다" << endl;
-			
-		}
-		else if (i == 9) {
-			if (ap[i] != num) {
-				cout << num << "은 존재하지 않습니다" << endl;
-			}
-		}
-		else {
-			continue;
+			position = i;
 		}
 	}
+	if (position == -1) {
+		cout << num << "은 없습니다." << endl;
+	}
+	else {
+		cout << num << "은 " << position << "번째에 있습니다," << endl;
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+// 숫자 하나입력시, '랜덤숫자(1~20)가 10개 있는 배열'에서 입력한 수가 있는지 확인하고, 저장된 위치 출력 (순차검색 - 선형)
+// 여기서는 중복 검색이 총 5번 진행됨.
+
+
+#include<iostream>
+#include<stdlib.h>
+#include<time.h>
+
+using namespace std;
+
+void searchArray(int* ap, int num, int size);
+
+int main() {
+	int array[10];
+	srand(time(NULL));
+	for (int i = 0; i < 10; i++) {
+		array[i] = rand()%20 + 1;
+	}
+
+	for (int i = 0; i < 10; i++) {
+		cout << array[i] << "   ";
+	}
+	cout << endl;
+
+	int num; // 검색할 데이터
+	unsigned int size; // 배열의 크기 
+	size = sizeof(array) / sizeof(array[0]); // 여기서는 10
+
+	for (int j = 0; j < 5; j++) {
+		cout << "#검색할 정수를 입력하시오:";
+		cin >> num;
+		searchArray(array, num, size);
+	}
+	
+}
+
+void searchArray(int* ap, int num, int size) {
+	int position[10] = { -1 };
+	int k=0;
+	for (int i = 0; i < size; i++) {
+		if (ap[i] == num) {
+			position[k] = i;
+			k++;
+		}
+	}
+	if (position[0] == -1) {
+		cout << num << "은 없습니다." << endl;
+	}
+	else {
+		for (int j = 0; j < k; j++) {
+			cout << num << "은 " << position[j] + 1 << "번째에 있습니다," << endl;
+		}
+		
+	}
+	
 }
