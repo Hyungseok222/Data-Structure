@@ -109,3 +109,72 @@ void searchArray(int* ap, int num, int size) {
 	}
 	
 }
+
+
+
+
+
+
+
+
+
+
+// 회문 검사 프로그램
+
+
+#include<iostream>
+#include<string>
+
+using namespace std;
+
+void getchar(char* pa);
+int checkFn(char* pa);
+
+int main(){
+
+	char str[20];
+
+	while (true) {
+		getchar(str);
+		int p;   //나중에 회문 체크함수에서 반환되는 수를 받음
+		int k = strcmp(str, "end");
+		if (k != 0) {
+			p = checkFn(str); // 1반환되면 회문, 0 이면 회문x
+			if (p == 1) {
+				cout << "회문입니다!!!!!" << endl;
+			}
+			else if (p == 0) {
+				cout << "회문이 아닙니다." << endl;
+			}
+		}
+		else if (k == 0) {
+			break;
+		}
+	}
+	return 0;
+}
+
+void getchar(char* pa) {
+	cout << "문자를 입력하세요(최대 19자):";
+	cin >> pa;
+	return;
+}
+
+int checkFn(char* pa) {
+	int j = 0;
+	int n = strlen(pa);
+	for (int i = 0; i < n / 2; i++) {
+		if (pa[i] == pa[n - i - 1]) {
+			j++;
+		}
+		else {
+			continue;
+		}
+	}
+	if (j == n / 2) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
