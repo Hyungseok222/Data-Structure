@@ -75,8 +75,8 @@ void makeArray(int(*pa)[4]) {
 
 void printArray(int(*pa)[4]) {
 	int i, j;
-	int row[3] = { 0,0,0 }; // 1,2,3행 각각의 합
-	int col[4] = { 0,0,0,0 }; // 1,2,3,4열 각각의 합
+	int rowsum;
+	int colsum;
 
 	for (i = 0; i < 3; i++) {
 		cout << i << "행: ";
@@ -89,23 +89,21 @@ void printArray(int(*pa)[4]) {
 	cout << endl;
 
 	for (i = 0; i < 3; i++) {
+		rowsum = 0;
 		for (j = 0; j < 4; j++) {
-			row[i] = row[i] + pa[i][j];
+			rowsum += pa[i][j];
 		}
+		cout << i << "행의 합:" << rowsum << endl;
 	}
+
+	cout << endl;
 
 	for (j = 0; j < 4; j++) {
+		colsum = 0;
 		for (i = 0; i < 3; i++) {
-			col[j] = col[j] + pa[i][j];
+			colsum += pa[i][j];
 		}
-	}
-
-	for (i = 0; i < 3; i++) {
-		cout << i << "행의 합:" << row[i] << endl;
-	}
-	cout << endl;
-	for (int j = 0; j < 4; j++) {
-		cout << j << "열의 합:" << col[j] << endl;
+		cout << j << "열의 합:" << colsum << endl;
 	}
 
 	return;
