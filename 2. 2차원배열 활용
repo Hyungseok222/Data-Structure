@@ -38,3 +38,75 @@ void outputArray(int(*p)[4], int row) {
 	}
 	return;
 }
+
+
+
+
+
+
+// 3*4 (1~20난수)행렬 생성 후, 각 방의 요소들, 행들의 합, 열들의 합 출력 프로그램
+
+#include<iostream>
+#include<cstdlib>
+#include<time.h>
+
+using namespace std;
+
+void makeArray(int(*pa)[4]);
+void printArray(int(*pa)[4]);
+
+int main() {
+	srand(time(NULL));
+	int num[3][4];
+	makeArray(num);
+	printArray(num);
+
+	return 0;
+}
+
+void makeArray(int(*pa)[4]) {
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 4; j++) {
+			pa[i][j] = rand() % 20 + 1;
+		}
+	}
+	return;
+}
+
+void printArray(int(*pa)[4]) {
+	int i, j;
+	int row[3] = { 0,0,0 }; // 1,2,3행 각각의 합
+	int col[4] = { 0,0,0,0 }; // 1,2,3,4열 각각의 합
+
+	for (i = 0; i < 3; i++) {
+		cout << i << "행: ";
+		for (j = 0; j < 4; j++) {
+			cout << pa[i][j] << " ";
+		}
+		cout << endl;
+	}
+
+	cout << endl;
+
+	for (i = 0; i < 3; i++) {
+		for (j = 0; j < 4; j++) {
+			row[i] = row[i] + pa[i][j];
+		}
+	}
+
+	for (j = 0; j < 4; j++) {
+		for (i = 0; i < 3; i++) {
+			col[j] = col[j] + pa[i][j];
+		}
+	}
+
+	for (i = 0; i < 3; i++) {
+		cout << i << "행의 합:" << row[i] << endl;
+	}
+	cout << endl;
+	for (int j = 0; j < 4; j++) {
+		cout << j << "열의 합:" << col[j] << endl;
+	}
+
+	return;
+}
