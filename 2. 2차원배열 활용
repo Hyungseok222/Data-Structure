@@ -1,0 +1,40 @@
+// 2차원 배열 복습
+
+#include<iostream>
+
+using namespace std;
+
+void inputArray(int(*p)[4], int row);
+void outputArray(int(*p)[4], int row);
+
+int main() {
+	int num[3][4];
+	int row; // 행의 개수
+	row = sizeof(num) / sizeof(num[0]); //num[0]크기는 4*4 = 16byte
+	inputArray(num, row);
+	outputArray(num, row);
+	return 0;
+}
+
+void inputArray(int(*p)[4], int row) {
+	int i, j;
+	for (i = 0; i < row; i++) {
+		for (j = 0; j < 4; j++) {
+			cout << i << "행 " << j << "열 방의 값 입력:";
+			cin >> p[i][j];
+		}
+	}
+	return;
+}
+
+void outputArray(int(*p)[4], int row) {
+	int i, j;
+	for (i = 0; i < row; i++) {
+		cout << i << "행:";
+		for (j = 0; j < 4; j++) {
+			cout << p[i][j] << "  ";
+		}
+		cout << endl;
+	}
+	return;
+}
