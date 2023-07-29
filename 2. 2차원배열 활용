@@ -108,3 +108,45 @@ void printArray(int(*pa)[4]) {
 
 	return;
 }
+
+
+
+
+
+
+
+// 문자 5개를 2차원 배열로 받고, 문자열 첫 문자와 마지막 문자 출력하기
+
+#include<iostream>
+
+using namespace std;
+
+void initWord(char(*pa)[80],int row);
+void outputWord(char(*pa)[80], int row);
+
+int main() {
+
+	char word[5][80];
+	int row = sizeof(word) / sizeof(word[0]); // 여기선 5임
+
+	initWord(word,row);
+	outputWord(word, row);
+	
+	return 0;
+}
+
+void initWord(char(*pa)[80], int row) {
+	for (int i = 0; i < row; i++) {
+		cout << "문자를 입력하세요:";
+		cin >> pa[i];
+	}
+	return;
+}
+
+void outputWord(char(*pa)[80], int row) {
+	for (int i = 0; i < row; i++) {
+		int n = strlen(pa[i]);
+		cout << "str["<< i <<"] = " << pa[i] << " " << pa[i][0] << " " << pa[i][n - 1] << endl;
+	}
+	return;
+}
