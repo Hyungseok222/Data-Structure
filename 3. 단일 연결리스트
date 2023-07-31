@@ -26,6 +26,7 @@ typedef struct _list {
 // 함수 선언 라인
 
 BOOL createList(List *lp); // List구조체로 만들어지는 리스트의 주소를 받음
+BOOL addFirst(List *lp, int data); // Node 생성 후 list에 추가하는 함수
 
 int main() {
 	
@@ -67,3 +68,24 @@ BOOL createList(List* lp) {
 
 	return TRUE;
 }
+
+// addFirst()함수 - Node 를 하나 생성해 headpointer가 가리키는 첫 자리에 대입하게 함. (node 추가 함수)
+
+BOOL addFirst(List* lp, int data) {
+	Node* newp; // 노드 생성
+
+	if (lp == NULL) { // *lp NULL check
+		return FALSE;
+	}
+	
+	newp = (Node*)malloc(sizeof(Node)); // 동적할당
+	if (newp != NULL) {
+		newp->data = data; // 새 노드에 데이터 저장
+		newp->next = lp->head->next; // head포인터가 가리키던 첫 노드의 주소 연결
+		lp->head->next = newp; //head포인터는 새 노드를 가리키도록 연결
+		lp->size = lp->size + 1; // 관리 list 의 size 수 증가
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
