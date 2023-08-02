@@ -29,6 +29,8 @@ BOOL createList(List* lp); // List구조체로 만들어지는 리스트의 주�
 BOOL addFirst(List* lp, int data); // Node 생성 후 list에 추가하는 함수
 BOOL addLast(List* lp, int data);
 void displayList(List* lp);
+Node *searchNode(List* lp, int data); // Node주소 받환받아야 하므로 함수 자료형이 노드.
+BOOL removeNode(List* lp, int data);
 
 
 
@@ -74,10 +76,29 @@ int main() {
 			displayList(&list);
 		}
 		else if (menuNum == 3) {
-
+			int data2;
+			cout << "찾을 수 입력:";
+			cin >> data2;
+			Node *pa = searchNode(&list, data2);
+			if (pa != NULL) {
+				cout << "@검색 데이터 존재!" << endl;
+			}
+			else {
+				cout << "@검색 데이터 없음" << endl;
+			}
 		}
 		else if (menuNum == 4) {
-
+			int data3;
+			cout << "삭제할 데이터 입력:";
+			cin >> data3;
+			BOOL k;
+			k = removeNode(&list, data3);
+			if (k == TRUE) {
+				cout << "삭제 성공!" << endl;
+			}
+			else {
+				cout << "삭제 실패" << endl;
+			}
 		}
 		else if (menuNum == 5) {
 
@@ -187,4 +208,51 @@ void displayList(List* lp) {
 	}
 	cout << endl;
 	return;
+}
+
+Node *searchNode(List* lp, int data) {
+	Node* curp;
+
+	if (lp == NULL) {
+		return NULL;
+	}
+
+	curp = lp->head->next;
+
+	while (curp != lp->tail) {
+		if (curp->data == data) {
+			return curp;
+		}
+		else {
+			curp = curp->next;
+		}
+	}
+	return NULL;
+}
+
+BOOL removeNode(List* lp, int data) {
+	Node* dp;
+	Node* curp;
+
+	if (lp == NULL) {
+		return FALSE;
+	}
+
+	dp = searchNode(lp, data);
+
+	if (dp != NULL) {
+		curp = lp->head;
+
+		while (curp->next != dp) {
+			curp = curp->next;
+		}
+
+		curp->next = dp->next;
+		free(dp);
+		--lp->size;
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
 }
