@@ -27,11 +27,73 @@ typedef struct _list {
 
 BOOL createList(List *lp); // List구조체로 만들어지는 리스트의 주소를 받음
 BOOL addFirst(List *lp, int data); // Node 생성 후 list에 추가하는 함수
+BOOL addLast(List* lp, int data);
+void displayList(List* lp);
+
+
+
+
 
 int main() {
+	const char* menulist[] = { "1. 입력하기","2. 출력하기","3. 검색하기","4. 삭제하기","5. 정렬하기","6. 종 료" };
+	int menuNum; // 메뉴 번호 저장 변수
+	int menuCnt; // 매뉴 개수 저장변수
+	menuCnt = sizeof(menulist) / sizeof(menulist[0]);
+
+	List list;
+	BOOL bres = createList(&list);
+	if (bres == TRUE) {
+		cout << "# list 생성 성공!" << endl;
+	}
+	else {
+		cout << "# list 성공 실패" << endl;
+	}
+
+	for (int i = 0; i < menuCnt; i++) {
+		cout << menulist[i] << endl;
+	}
+
+
+
+	while (TRUE) {
+		cout << "입력하기:";
+		cin >> menuNum;
+
+		if (menuNum == 1) {
+			int i;
+			int data;
+			for (i = 0; i < 5; i++) {
+				cout << "추가할 데이터 입력:";
+				cin >> data;
+				addFirst(&list, data);
+			}
+			continue;
+
+		}
+		else if (menuNum == 2) {
+			displayList(&list);
+		}
+		else if (menuNum == 3) {
+
+		}
+		else if (menuNum == 4) {
+
+		}
+		else if (menuNum == 5) {
+
+		}
+		else if (menuNum == 6) {
+			break;
+		}
+	}
 	
 
 }
+
+
+
+
+
 
 BOOL createList(List* lp) {
 	if (lp == NULL) {   // lp포인터 NULL check - 주소가 있는건지 없는건지 확인
@@ -89,3 +151,45 @@ BOOL addFirst(List* lp, int data) {
 	else {
 		return FALSE;
 	}
+
+BOOL addLast(List* lp, int data) {
+	Node* newp; // 새 노드
+	Node* btp; // tail노드 앞 노드
+
+	if (lp == NULL) {
+		return FALSE;
+	}
+
+	newp = (Node*)malloc(sizeof(Node));// 동적할당
+	if (newp != NULL) {
+		newp->data = data;
+		newp->next = lp->tail; // tail이 가리키는 주소가 아니라, 그냥 tail의 주소 - addFirst함수와의 차이점
+		//tail노드 앞 노드 검색
+		//tail노드 앞에 새 노드 연결
+		btp = lp->head; //btp를 첫 노드인 head노드로 설정
+		while (btp->next != lp->tail) {
+			btp = btp->next; //btp는 head의 주소, btp->next 는 head가 가리키는 노드의 주소
+		}
+		btp->next = newp; //btp가 tail전 노드가 됨
+		++lp->size;
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+}
+
+void displayList(List* lp) {
+	Node* crnt;
+
+	if (lp == NULL) {
+		return;
+	}
+	crnt = lp->head->next; // 이렇게 해야 crnt = head Node가 됨.
+	while (crnt != lp->tail) { //crnt->next 가 가리키는 곳부터 data가 있음.
+		cout << crnt->data << endl;
+		crnt = crnt->next; // 다음 노드로 넘겨주는 코드
+	}
+	cout << endl;
+	return;
+}
