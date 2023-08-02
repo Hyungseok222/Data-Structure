@@ -25,8 +25,8 @@ typedef struct _list {
 
 // 함수 선언 라인
 
-BOOL createList(List *lp); // List구조체로 만들어지는 리스트의 주소를 받음
-BOOL addFirst(List *lp, int data); // Node 생성 후 list에 추가하는 함수
+BOOL createList(List* lp); // List구조체로 만들어지는 리스트의 주소를 받음
+BOOL addFirst(List* lp, int data); // Node 생성 후 list에 추가하는 함수
 BOOL addLast(List* lp, int data);
 void displayList(List* lp);
 
@@ -65,7 +65,7 @@ int main() {
 			for (i = 0; i < 5; i++) {
 				cout << "추가할 데이터 입력:";
 				cin >> data;
-				addFirst(&list, data);
+				addLast(&list, data);
 			}
 			continue;
 
@@ -86,7 +86,7 @@ int main() {
 			break;
 		}
 	}
-	
+
 
 }
 
@@ -102,29 +102,23 @@ BOOL createList(List* lp) {
 
 
 	lp->head = (Node*)malloc(sizeof(Node)); // List구조체의 head 원소에 접근하면서 head Node 생성
+	lp->tail = (Node*)malloc(sizeof(Node)); // tail Node 생성 (구조체 동적할당)
 	//malloc함수 특성상, 동적할당에 실패하면 NULL을 반환함, 따라서 실패했으면, FALSE를 반환하도록 해야함
-	if (lp->head == NULL) {
-		return FALSE;
-	}
-	lp->head = (Node*)malloc(sizeof(Node)); // tail Node 생성 (구조체 동적할당)
-	if (lp->tail == NULL) {
+	if (lp->head == NULL || lp->tail == NULL) {
 		free(lp->head);
+		free(lp->tail);
 		return FALSE;
 	}
 
 
 	/*head tail 연결*/
 	lp->head->next = lp->tail; // tail 주소를 head가 가리키도록 설정
-	
-	/*tail node의 포인터는 자기 자신을 가리키도록 설정*/
-	lp->tail->next = lp->tail;
+	lp->tail->next = lp->tail;/*tail node의 포인터는 자기 자신을 가리키도록 설정*/
+
 
 	lp->size = 0; // 연결리스트 크기 0 으로 초기화(아직 노드가 없을때)
 
-	free(lp->head);
-	free(lp->tail);
-
-	/*왜 참조 연산자','을 안쓰고 '->'를 쓰냐면, 
+	/*왜 참조 연산자','을 안쓰고 '->'를 쓰냐면,
 	애초에 createList(List *lp)함수가 받는 인자가 포인터기때문에 포인터주소에 해당되는
 	실제 구조체의 인자를 가리켜야하므로 -> 를 사용해야함 */
 
@@ -139,7 +133,7 @@ BOOL addFirst(List* lp, int data) {
 	if (lp == NULL) { // *lp NULL check
 		return FALSE;
 	}
-	
+
 	newp = (Node*)malloc(sizeof(Node)); // 동적할당
 	if (newp != NULL) {
 		newp->data = data; // 새 노드에 데이터 저장
@@ -151,6 +145,7 @@ BOOL addFirst(List* lp, int data) {
 	else {
 		return FALSE;
 	}
+}
 
 BOOL addLast(List* lp, int data) {
 	Node* newp; // 새 노드
