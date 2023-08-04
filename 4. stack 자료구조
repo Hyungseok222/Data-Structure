@@ -1,0 +1,82 @@
+#include <iostream>
+
+using namespace std;
+
+/*스택 공부하기*/
+
+enum BOOL { TRUE,FALSE };
+
+typedef struct _stack {
+	int* stack; // 동적할당 받는 배열로 선언
+	int size;
+	int top; // 데이터 입출력을 받는 가장 윗부분
+}Stack;
+
+BOOL createStack(Stack *sp, int size);
+BOOL destroyStack(Stack*);
+
+
+int main() {
+	Stack stk;
+	const char* menuList[] = { "1.입력하기","2.삭제하기" ,"3.출력하기." ,"4.종 료" };
+	int menuCnt;
+	int menuNum;
+
+	createStack(&stk, 5);
+	menuCnt = sizeof(menuList) / sizeof(menuList[0]);
+
+	cout << endl;
+
+	for (int i = 0; i < menuCnt; i++) {
+		cout << menuList[i] << endl;
+	}
+
+	while (TRUE) {
+		cout << endl;
+		cout << "# 숫자 입력:";
+		cin >> menuNum; // menuNum은 int 형 자료이므로 int가 입력되었는지 확인 필요
+
+		if (cin.fail()) { // int 이외 자료형이 들어오면 break
+			break;
+		}
+
+		if (menuNum == 1) { // 데이터 입력하기
+
+		}
+		else if (menuNum == 2) { // 데이터 삭제주기
+
+		}
+		else if (menuNum == 3) { // 데이터 출력하기
+
+		}
+
+		else if (menuNum == 4) { // 종료
+			break;
+		}
+
+	}
+	destroyStack(&stk);
+
+	return 0;
+}
+
+BOOL createStack(Stack* sp, int size) {
+	if (sp == NULL) {
+		return FALSE;
+	}
+
+	sp->stack = (int*)malloc(sizeof(int) * size); //sp는 스택이 아니라. 스택관리 구조체임
+	if (sp == NULL) {
+		return FALSE;
+	}
+	else {
+		sp->top = 0;
+		sp->size = size;
+		return TRUE;
+	}
+
+}
+
+BOOL destroyStack(Stack*) {
+
+}
