@@ -1,0 +1,326 @@
+#include<iostream>
+
+using namespace std;
+
+
+// 구조체, 노드 선언 라인
+
+enum BOOL { FALSE, TRUE };
+
+typedef struct _node Node; //형변환 - _node 구조체를 Node 라는 단어로 사용하겠다!
+struct _node {
+	Node* prev;
+	int data;
+	Node* next;
+};
+
+typedef struct _list {
+	Node* head; // data, next를 가진 구조체
+	Node* tail; // data, next를 가진 구조체
+	int size; // Node 수
+}List;
+
+
+
+// 함수 선언 라인
+
+BOOL createList(List* lp); // List구조체로 만들어지는 리스트의 주소를 받음
+BOOL addFirst(List* lp, int data); // Node 생성 후 list에 추가하는 함수
+BOOL addLast(List* lp, int data);
+void displayList(List* lp);
+Node *searchNode(List* lp, int data); // Node주소 받환받아야 하므로 함수 자료형이 노드.
+BOOL removeNode(List* lp, int data);
+void sortList(List* lp);
+void destroyList(List* lp);
+
+
+
+
+/*#########################  메인함수 #################################### */
+
+
+int main() {
+	const char* menulist[] = { "1. 입력하기","2. 출력하기","3. 검색하기","4. 삭제하기","5. 정렬하기","6. 종 료" };
+	int menuNum; // 메뉴 번호 저장 변수
+	int menuCnt; // 매뉴 개수 저장변수
+	menuCnt = sizeof(menulist) / sizeof(menulist[0]);
+
+	List list;
+	BOOL bres = createList(&list);
+	if (bres == TRUE) {
+		cout << "# list 생성 성공!" << endl;
+	}
+	else {
+		cout << "# list 성공 실패" << endl;
+	}
+
+	cout << endl;
+
+	for (int i = 0; i < menuCnt; i++) {
+		cout << menulist[i] << endl;
+	}
+
+
+
+	while (TRUE) {
+		cout << endl;
+		cout << "# 숫자 입력:";
+		cin >> menuNum; // menuNum은 int 형 자료이므로 int가 입력되었는지 확인 필요
+
+		if (cin.fail()) { // int 이외 자료형이 들어오면 break
+			break;
+		}
+
+		if (menuNum == 1) { // 데이터 입력하기
+			int i;
+			int data;
+			for (i = 0; i < 5; i++) {
+				cout << "추가할 데이터 입력:";
+				cin >> data;
+				if (cin.fail()) {
+					break;
+				}
+				addLast(&list, data);
+			}
+			continue;
+
+		}
+		else if (menuNum == 2) { // 데이터 보여주기
+			displayList(&list);
+		}
+		else if (menuNum == 3) { // 데이터 찾기
+			int data2;
+			cout << "찾을 수 입력:";
+			cin >> data2;
+			Node *pa = searchNode(&list, data2);
+			if (pa != NULL) {
+				cout << "@검색 데이터 존재!" << endl;
+			}
+			else {
+				cout << "@검색 데이터 없음" << endl;
+			}
+		}
+
+		else if (menuNum == 4) { // 삭제하기
+			int data3;
+			cout << "삭제할 데이터 입력:";
+			cin >> data3;
+			BOOL k;
+			k = removeNode(&list, data3);
+			if (k == TRUE) {
+				cout << "삭제 성공!" << endl;
+			}
+			else {
+				cout << "삭제 실패" << endl;
+			}
+		}
+		else if (menuNum == 5) { // 정렬하기
+			sortList(&list);
+		}
+		else if (menuNum == 6) { // 종료하기
+			break;
+		}
+		cout << endl;
+	}
+
+	destroyList(&list);
+
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+BOOL createList(List* lp) {
+	if (lp == NULL) {   // lp포인터 NULL check - 주소가 있는건지 없는건지 확인
+		return FALSE;
+	}
+
+
+	lp->head = (Node*)malloc(sizeof(Node)); // List구조체의 head 원소에 접근하면서 head Node 생성
+	lp->tail = (Node*)malloc(sizeof(Node)); // tail Node 생성 (구조체 동적할당)
+	
+	if (lp->head == NULL || lp->tail == NULL) {
+		free(lp->head);
+		free(lp->tail);
+		return FALSE;
+	}
+
+	lp->head->prev = lp->head;
+	lp->head->next = lp->tail; // tail 주소를 head가 가리키도록 설정
+	lp->tail->prev = lp->head;
+	lp->tail->next = lp->tail;/*tail node의 포인터는 자기 자신을 가리키도록 설정*/
+
+
+	lp->size = 0; 
+
+
+	return TRUE;
+}
+
+
+
+BOOL addFirst(List* lp, int data) {
+	Node* newp; // 노드 생성
+
+	if (lp == NULL) { // *lp NULL check
+		return FALSE;
+	}
+
+	newp = (Node*)malloc(sizeof(Node)); // 동적할당
+	if (newp != NULL) {
+		newp->data = data; // 새 노드에 데이터 저장
+		newp->prev = lp->head; // 1
+		newp->next = lp->head->next; // 2 
+		
+		lp->head->next->prev = newp; // 3
+		lp->head->next = newp; // 4
+
+		++lp->size; // 관리 list 의 size 수 증가
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+}
+
+
+
+
+BOOL addLast(List* lp, int data) {
+	Node* newp; // 새 노드
+
+	if (lp == NULL) {
+		return FALSE;
+	}
+
+	newp = (Node*)malloc(sizeof(Node));// 동적할당
+	if (newp != NULL) {
+		newp->data = data;
+		newp->prev = lp->tail->prev;
+		newp->next = lp->tail; // tail이 가리키는 주소가 아니라, 그냥 tail의 주소 - addFirst함수와의 차이점
+		
+		lp->tail->prev->next = newp; //btp가 tail전 노드가 됨
+		lp->tail->prev = newp;
+		++lp->size;
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+}
+
+
+void displayList(List* lp) {
+	Node* crnt;
+
+	if (lp == NULL) {
+		return;
+	}
+
+	crnt = lp->head->next; // 이렇게 해야 crnt = head Node가 됨.
+	while (crnt != lp->tail) { //crnt->next 가 가리키는 곳부터 data가 있음.
+		cout << crnt->data << endl;
+		crnt = crnt->next; // 다음 노드로 넘겨주는 코드
+	}
+	cout << endl;
+	return;
+}
+
+Node *searchNode(List* lp, int data) {
+	Node* curp;
+
+	if (lp == NULL) {
+		return NULL;
+	}
+
+	curp = lp->head->next;
+
+	while (curp != lp->tail) {
+		if (curp->data == data) {
+			return curp;
+		}
+		else {
+			curp = curp->next;
+		}
+	}
+	return NULL;
+}
+
+BOOL removeNode(List* lp, int data) {
+	Node* dp;
+
+	if (lp == NULL) {
+		return FALSE;
+	}
+
+	dp = searchNode(lp, data);
+
+	if (dp != NULL) {
+
+		dp->prev->next = dp->next;
+		dp->next->prev = dp->prev;
+		free(dp);
+		--lp->size;
+		return TRUE;
+	}
+	else {
+		return FALSE;
+	}
+}
+
+
+void sortList(List* lp) { /* 단일 연결 & 이중 연결 구조에서 sort 알고리즘이
+	바뀔 이유는 없다.*/
+	Node* curp;
+	Node* np;
+
+	int temp;
+
+	if (lp == NULL) {
+		return;
+	}
+
+	curp = lp->head->next;
+
+	while (curp->next != lp->tail) {
+		np = curp->next; 
+		while (np != lp->tail) {
+			if (curp->data > np->data) { // 여기서 부호를 바꾸면 내림차순.
+				temp = np->data;
+				np->data = curp->data;
+				curp->data = temp;
+			}
+			np = np->next;
+		}
+		curp = curp->next;
+	}
+	return;
+}
+
+void destroyList(List* lp) {
+	Node* curp;
+	Node* temp;
+
+	if (lp == NULL) {
+		return;
+	}
+
+	curp = lp->head->next;
+	while (curp != lp->tail) {
+		temp = curp->next;
+		free(curp);
+		curp = temp;
+	}
+	free(lp->head);
+	free(lp->tail);
+
+	lp->head = lp->tail = NULL;
+	lp->size = 0;
+	return;
+}
