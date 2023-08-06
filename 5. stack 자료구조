@@ -4,21 +4,19 @@ using namespace std;
 
 /*스택 공부하기*/
 
-enum BOOL { TRUE, FALSE };
-
 typedef struct _stack {
 	int* stack; // 동적할당 받는 배열로 선언
 	int size; // stack이 받을 수 있는 데이터 저장 공간 크기 size = 5) stack 배열 크기가 5.
 	int top; // 데이터가 쌓인 갯수 데이터 입출력을 받는 가장 윗부분  top=3) 3개까지 쌓였다!
 }Stack;
 
-BOOL createStack(Stack* sp, int size);
-BOOL destroyStack(Stack* sp);
-BOOL isStackFull(Stack* sp);
-BOOL isStackEmpty(Stack* sp);
-BOOL push(Stack* sp, int inData);
-BOOL pop(Stack* sp, int *popData);
-void printStack(Stack* sp);
+bool createStack(Stack* sp, int size);
+bool isStackFull(Stack* sp);
+bool isStackEmpty(Stack* sp);
+bool push(Stack* sp, int inData);
+bool pop(Stack* sp, int *popData);
+void printStack(const Stack* sp);
+bool destroyStack(Stack* sp);
 
 
 int main() {
@@ -48,6 +46,9 @@ int main() {
 		if (menuNum == 1) { // 데이터 입력하기
 			int data;
 			for (int i = 0; i < 5; i++) {
+				if (stk.top == 5) { // 스택메모리가 꽉 찼으면 더 이상 입력 받지 않고 while문으로 복귀하기
+					continue; 
+				}
 				cout << "입력할 데이터:";
 				cin >> data;
 				push(&stk, data);
@@ -72,99 +73,96 @@ int main() {
 	return 0;
 }
 
-BOOL createStack(Stack* sp, int size) {
+bool createStack(Stack* sp, int size) {
 	if (sp == NULL) {
-		return FALSE;
+		return false;
 	}
 
 	sp->stack = (int*)calloc(size,sizeof(int)); //sp는 스택이 아니라. 스택관리 구조체임
 	if (sp->stack == NULL) {
-		return FALSE;
+		return false;
 	}
 	else {
 		cout << "스택 메모리 생성 성공!" << endl;
 		sp->top = 0;
 		sp->size = size;
-		return TRUE;
+		return true;
 	}
 
 }
 
-BOOL isStackFull(Stack* sp) {
+bool isStackFull(Stack* sp) {
 	if (sp == NULL) {
-		return FALSE;
+		return false;
 	}
 
 	if (sp->top == sp->size ) {
-		return TRUE;
-		cout << "메모리가 꽉 찼습니다." << endl;
+		return true;
 	}
 	else {
-		cout << "메모리가 충분합니다." << endl;
-		return FALSE;
+		return false;
 	}
 }
 
-BOOL isStackEmpty(Stack* sp) {
+bool isStackEmpty(Stack* sp) {
 	if (sp == NULL) {
-		return FALSE;
+		return false;
 	}
 
 	if(sp->top == 0) {
-		cout << "메모리가 텅 비었습니다" << endl;
-		return TRUE;
+		return true;
 	}
 	else {
-		return FALSE;
+		return false;
 	}
 }
 
-BOOL push(Stack* sp, int inData) {
+bool push(Stack* sp, int inData) {
 	if (sp == NULL) {
-		return FALSE;
+		return false;
 	}
 
 	if (isStackFull(sp)) { // 해당 함수 반환값이 true면,
-		return FALSE;
+		return false;
 	}
 	else {
 		sp->stack[sp->top] = inData;
-		++sp->top;
-		return TRUE;
+		sp->top++;
+		return true;
 	}
 }
 
-BOOL pop(Stack* sp, int *popData) {
+bool pop(Stack* sp, int *popData) {
 	if (sp == NULL) {
-		return FALSE;
+		return false;
 	}
 
 	if (isStackEmpty(sp)) {
-		return FALSE;
+		return false;
 	}
 	else {
-		--sp->top;
+		sp->top--;
 		*popData = sp->stack[sp->top];
-		cout << sp->stack[sp->top];
-		cout << "데이터 " << *popData << "가 삭제 되었습니다." << endl;
-
-		return TRUE;
+		
+		return true;
 	}
 }
 
-void printStack(Stack* sp) {
+void printStack(const Stack* sp) {
+	int i = sp->top;
+
 	if (sp == NULL) {
 		return;
 	}
 
-	for (int i = 0; i < sp->top; i++) {
-		cout << sp->stack[i] << endl;
+	for (int j = 0; j < i; j++) {
+		cout << sp->stack[j] << endl;
 	}
 }
 
-BOOL destroyStack(Stack* sp) {
+bool destroyStack(Stack* sp) {
 	if (sp == NULL) {
-		return FALSE;
+		return false;
 	}
 
 	if (sp->stack != NULL) {
