@@ -1,0 +1,206 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+/*리스트 스택 이용하기*/
+// 파일로부터 한 문장을 입력받고, 그 다음줄에서 명령문 숫자를 입력받고, 그 다음줄부터는 명령문을 입력받음.
+// L입력시 커서 왼쪽으로 이동, D입력시 커서 오른쪽으로 이동, B입력시 커서 왼쪽 알파벳 삭제.하는 문자 editer 제작
+
+using namespace std;
+
+typedef struct _node Node;
+struct _node {
+	char data;
+	Node* next;
+};
+
+
+typedef struct _stacknode{
+	Node* head;
+	Node* tail;
+}Stack;
+
+
+bool createStack(Stack* sp);
+bool isStackEmpty(const Stack* sp);
+bool push(Stack *sp, char inData);
+bool pop(Stack *sp, char* popData);
+void printStack(const Stack *sp);
+void destroyStack(Stack *sp);
+
+
+
+int main() {
+	Stack lstk, rstk;
+	createStack(&lstk);
+	createStack(&rstk);
+	char data; //pop에서 전달되는 문자 저장용도
+	char delData;
+
+
+	/*파일 입출력 부분*/
+
+	ifstream inFile("file.txt");
+	if (!inFile) {
+		cout << "파일을 열 수 없습니다." << endl;
+		return 1;
+	}
+
+	char word[10000];
+	inFile.getline(word, sizeof(word));
+	for (int j = 0; j < 10; j++) {
+		cout << word[j] << endl; // 읽어오기 성공
+		push(&lstk, word[j]);
+	}
+
+	int arraySize;
+	inFile >> arraySize;
+	inFile.ignore();
+	cout << arraySize; // 읽기 성공
+
+	char* array = new char[arraySize];
+
+	for (int i = 0; i < arraySize; i++) {
+		inFile >> array[i];
+		cout << array[i];// 읽기는 전부 성공
+		// 여기에 들어오는 문자에 따라 함수 실행하도록 코드짜기
+		if (array[i] == 'L') { // 커서가 왼쪽으로 이동
+			pop(&lstk, &data);
+			push(&rstk, data);
+		}
+		else if (array[i] == 'D') {// 커서가 오른쪽으로 이동
+			pop(&rstk, &data);
+			push(&lstk, data);
+		}
+		else if (array[i] == 'B') {
+			pop(&lstk, &delData);
+		}
+		else if (array[i] == 'P') {
+
+		}
+		else {
+			//break;
+		}
+	}
+	cout << word << endl;
+
+	delete[] array;
+	destroyStack(&lstk);
+	destroyStack(&rstk);
+	return 0;
+}
+
+
+bool createStack(Stack* sp) {
+	if (sp == NULL) {
+		return false;
+	}
+
+	sp->head = (Node*)malloc(sizeof(Node)); //sp는 스택이 아니라. 스택관리 구조체임
+	sp->tail = (Node*)malloc(sizeof(Node));
+	
+	if (sp->head == NULL || sp->tail) {
+		free(sp->head);
+		free(sp->tail);
+		return false;
+	}
+	else {
+		sp->head->next = sp->tail;
+		sp->tail->next = sp->tail;
+		cout << "스택 메모리 생성 성공!" << endl;
+		return true;
+	}
+}
+
+bool isStackEmpty(const Stack* sp) {
+	if (sp == NULL) {
+		return false;
+	}
+
+	if (sp->head->next == sp->tail) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool push(Stack* sp, char inData) {
+	Node* newp;
+	if (sp == NULL) {
+		return false;
+	}
+	newp = (Node*)malloc(sizeof(Node));
+
+	if (newp != NULL) {
+		newp->data = inData;
+		newp->next = sp->head->next;
+
+		sp->head->next = newp;
+
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool pop(Stack* sp, char* popData) {
+	Node* temp;
+
+	if (sp == NULL) {
+		return false;
+	}
+
+	if (isStackEmpty(sp) == true) {
+		return false;
+	}
+
+	temp = sp->head->next;
+	*popData = temp->data;
+	sp->head->next = temp->next;
+	free(temp);
+
+	return true;
+}
+
+void printStack(const Stack* sp) {
+	Node* curp;
+
+	if (sp == NULL) {
+		return;
+	}
+	if (isStackEmpty(sp) == true) {
+		cout << "Stack이 비어있습니다." << endl;
+		return;
+	}
+
+	curp = (Node*)malloc(sizeof(Node));
+	curp = sp->head->next;
+	while (curp != sp->tail) {
+		cout << curp->data << endl;
+		curp = curp->next;
+	}
+	return;
+}
+
+void destroyStack(Stack* sp) {
+	Node* curp;
+	Node* temp;
+
+	if (sp == NULL) {
+		return;
+	}
+
+	curp = sp->head->next;
+	while (curp != sp->tail) {
+		temp = curp;
+		curp = curp->next;
+		free(curp);
+	}
+	free(sp->head);
+	free(sp->tail);
+
+	sp->head = sp->tail = NULL;
+	return;
+}
