@@ -3,8 +3,6 @@
 #include <string>
 
 /*리스트 스택 이용하기*/
-// 파일로부터 한 문장을 입력받고, 그 다음줄에서 명령문 숫자를 입력받고, 그 다음줄부터는 명령문을 입력받음.
-// L입력시 커서 왼쪽으로 이동, D입력시 커서 오른쪽으로 이동, B입력시 커서 왼쪽 알파벳 삭제.하는 문자 editer 제작
 
 using namespace std;
 
@@ -46,9 +44,9 @@ int main() {
 		return 1;
 	}
 
-	char word[10000];
+	char word[1000];
 	inFile.getline(word, sizeof(word));
-	for (int j = 0; j < 10; j++) {
+	for (int j = 0; j < 4; j++) {
 		cout << word[j] << endl; // 읽어오기 성공
 		push(&lstk, word[j]);
 	}
@@ -56,37 +54,39 @@ int main() {
 	int arraySize;
 	inFile >> arraySize;
 	inFile.ignore();
-	cout << arraySize; // 읽기 성공
+
 
 	char* array = new char[arraySize];
 
 	for (int i = 0; i < arraySize; i++) {
 		inFile >> array[i];
-		cout << array[i];// 읽기는 전부 성공
 		// 여기에 들어오는 문자에 따라 함수 실행하도록 코드짜기
 		if (array[i] == 'L') { // 커서가 왼쪽으로 이동
+			cout << "L이 읽어짐" << endl;
 			pop(&lstk, &data);
 			push(&rstk, data);
 		}
 		else if (array[i] == 'D') {// 커서가 오른쪽으로 이동
+			cout << "D가 읽어짐" << endl;
 			pop(&rstk, &data);
 			push(&lstk, data);
 		}
 		else if (array[i] == 'B') {
+			cout << "B가 읽어짐" << endl;
 			pop(&lstk, &delData);
 		}
-		else if (array[i] == 'P') {
-
-		}
 		else {
-			//break;
+			break;
 		}
 	}
-	cout << word << endl;
+	cout << "========================= 편집 결과 ===========================" << endl;
+	printStack(&lstk);  // b가 출력됨
+	printStack(&rstk);
 
-	delete[] array;
+	
 	destroyStack(&lstk);
 	destroyStack(&rstk);
+	delete[] array;
 	return 0;
 }
 
@@ -96,10 +96,10 @@ bool createStack(Stack* sp) {
 		return false;
 	}
 
-	sp->head = (Node*)malloc(sizeof(Node)); //sp는 스택이 아니라. 스택관리 구조체임
-	sp->tail = (Node*)malloc(sizeof(Node));
+	sp->head = new Node;
+	sp->tail = new Node;
 	
-	if (sp->head == NULL || sp->tail) {
+	if (sp->head == NULL || sp->tail == NULL) {
 		free(sp->head);
 		free(sp->tail);
 		return false;
@@ -130,13 +130,14 @@ bool push(Stack* sp, char inData) {
 	if (sp == NULL) {
 		return false;
 	}
-	newp = (Node*)malloc(sizeof(Node));
+	newp = new Node;
 
 	if (newp != NULL) {
 		newp->data = inData;
 		newp->next = sp->head->next;
 
 		sp->head->next = newp;
+		cout << "push 진행" << endl;
 
 		return true;
 	}
@@ -159,7 +160,8 @@ bool pop(Stack* sp, char* popData) {
 	temp = sp->head->next;
 	*popData = temp->data;
 	sp->head->next = temp->next;
-	free(temp);
+	delete temp; // Use 'delete' instead of 'free'
+	cout << "pop실행" << endl;
 
 	return true;
 }
@@ -175,7 +177,6 @@ void printStack(const Stack* sp) {
 		return;
 	}
 
-	curp = (Node*)malloc(sizeof(Node));
 	curp = sp->head->next;
 	while (curp != sp->tail) {
 		cout << curp->data << endl;
@@ -194,12 +195,12 @@ void destroyStack(Stack* sp) {
 
 	curp = sp->head->next;
 	while (curp != sp->tail) {
-		temp = curp;
-		curp = curp->next;
-		free(curp);
+		temp = curp->next;
+		delete curp;
+		curp = temp;
 	}
-	free(sp->head);
-	free(sp->tail);
+	delete sp->head;
+	delete sp->tail;
 
 	sp->head = sp->tail = NULL;
 	return;
