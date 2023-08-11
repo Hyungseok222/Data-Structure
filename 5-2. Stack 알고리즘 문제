@@ -1,3 +1,7 @@
+/*<파일 입출력을 통해 맨 윗줄에 알파벳으로 된 문장, 둘째 줄에 명령어 개수, 셋째 줄부턴 명령어를 적어두고 한문장씩 읽어내어
+주어진 명령어대로 첫번째 문장을 편집해주는 Editer 제작>*/
+
+
 #include <iostream>
 #include <fstream>
 #include <string>
