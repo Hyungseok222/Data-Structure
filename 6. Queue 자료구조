@@ -1,8 +1,8 @@
 #include <iostream>
 
-/* 배열을 이용한 원형 queue 자료구조 구현 */
-
 using namespace std;
+
+/* 배열을 이용한 queue 구현 */
 
 typedef struct _queue {
 	int* queue;
@@ -13,19 +13,13 @@ typedef struct _queue {
 
 
 
-
-
-
-
-
-
 bool createQueue(Queue* que, int size);
-
-
-
-
-
-
+bool isQueueFull(Queue *qp);
+bool isQueueEmpty(Queue *qp);
+bool enqueue(Queue* qp, int data);
+bool dequeue(Queue* qp, int* deData);
+void printQueue(Queue* qp);
+void destroyQueue(Queue* qp);
 
 
 
@@ -33,11 +27,12 @@ bool createQueue(Queue* que, int size);
 
 int main() {
 	Queue que;
-	const char* menulist[] = { "입력하기","삭제하기","출력하기","종 료" };
+	const char* menulist[] = { "1. 입력하기","2. 삭제하기","3. 출력하기","4. 종 료" };
 	int menuCnt = sizeof(menulist)/sizeof(menulist[0]);
 	int menuNum;
 
-	createQueue(&que, 5);
+	int Qsize = 5; // 여기서 원형 queue 사이즈 설정
+	createQueue(&que, Qsize);
 
 	cout << endl;
 
@@ -55,13 +50,22 @@ int main() {
 		}
 
 		if (menuNum == 1) { // 데이터 입력하기
+			for (int i = 0; i < Qsize-1; i++) { 
+				/*설정한 큐 사이즈보다 1작아야함 (완충지대 때문에)*/
+				int data;
+				cout << "추가할 데이터 입력:";
+				cin >> data;
+				enqueue(&que, data);
+			}
 			
 		}
 		else if (menuNum == 2) { // 데이터 삭제주기
-			
+			int deData;  // 삭제된 데이터 저장
+			dequeue(&que, &deData);
+			cout << deData << " 데이터가 삭제되었습니다." << endl;
 		}
 		else if (menuNum == 3) { // 데이터 출력하기
-			
+			printQueue(&que);
 		}
 
 		else if (menuNum == 4) { // 종료
@@ -70,20 +74,9 @@ int main() {
 
 	}
 
+	destroyQueue(&que);
 	return 0;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -101,7 +94,101 @@ bool createQueue(Queue* que, int size) {
 	else {
 		cout << "# 큐 자료구조 생성 성공 !" << endl;
 		que->size = size;
-		que->front, que->rear = 0;
+		que->front = que->rear = 0;
 		return true;
 	}
+}
+
+bool isQueueFull(Queue* qp) {
+	if (qp == NULL) {
+		return false;
+	}
+	if (qp->front == (qp->rear+1)%qp->size) {
+		return true; // 꽉 찬 상태
+	}
+	else {
+		return false;
+	}
+}
+
+bool isQueueEmpty(Queue* qp) {
+	if (qp == NULL) {
+		return false;
+	}
+
+	if (qp->front == qp->rear) {
+		return true; // 텅 빈 상태
+	}
+	else {
+		return false;
+	}
+}
+
+bool enqueue(Queue* qp, int data) {
+	if (qp == NULL) {
+		return false;
+	}
+
+	if (isQueueFull(qp) == true) {
+		return false;
+	}
+	else {
+		qp->queue[qp->rear] = data;
+		qp->rear = (qp->rear + 1)%qp->size; // rear는 0~size-1 까지 순환해야해서 rear++ 하면 안됨.
+		return true;
+	}
+	
+}
+
+bool dequeue(Queue* qp, int* deData) {
+	if (qp == NULL) {
+		return false;
+	}
+
+	if (isQueueEmpty(qp) == true) {
+		return false;
+	}
+	else {
+		*deData = qp->queue[qp->front];
+		qp->front = (qp->front+1)%qp->size;
+		return true;
+	}
+	
+}
+
+void printQueue(Queue* qp) {
+	if (qp == NULL) {
+		return;
+	}
+
+	int i = qp->front;
+	int k = qp->rear;
+	/*정방향*/
+	if (k > i) {
+		for (i; i < k; i++) {
+			cout << qp->queue[i] << "  ";
+		}
+	}
+	/*역방향*/
+	else if (k < i) {
+		for (i; i < qp->size; i++) {
+			cout << qp->queue[i] << "  ";
+		}
+		for (int j = 0; j < k; j++) {
+			cout << qp->queue[j] << "  ";
+		}
+	}
+}
+
+void destroyQueue(Queue* qp) {
+	if (qp == NULL) {
+		return;
+	}
+
+	if (qp->queue != NULL) {
+		delete[] qp->queue;
+	}
+	qp->queue = NULL;
+	qp->size = 0;
+	qp->front = qp->rear = 0;
 }
