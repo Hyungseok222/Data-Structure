@@ -422,3 +422,161 @@ void destroyQueue(Queue* qp) {
 	delete qp->tail;
 	qp->head = qp->tail = NULL;
 }
+
+
+
+
+
+====================================================================================
+
+/* Queue 활용 알고리즘 문제 */
+
+#include <iostream>
+
+/* 조세퍼스 순열 문제 - (N,M)을 받았을 때, N명중 M번째를 삭제시키면서 N = 0 이 될때까지 진행함. */
+
+using namespace std;
+
+typedef struct _node Node;
+struct _node {
+	int data;
+	Node* next;
+};
+
+typedef struct _queue {
+	Node* head;
+	Node* tail;
+}Queue;
+
+bool createQueue(Queue* qp);
+bool isQueueEmpty(Queue* qp);
+bool enqueue(Queue* qp, int n);
+bool dequeue(Queue* qp, int *deData);
+void destroyQueue(Queue* qp);
+
+int main() {
+	Queue que;
+	int n, m;
+	int getData;
+
+	createQueue(&que);
+
+	cout << "N(인원수)과 M(간격수)을 입력하시오:";
+	cin >> n;
+	cin >> m;
+
+	for (int i = 0; i < n; i++) {
+		enqueue(&que, i+1);
+	}
+
+	while (isQueueEmpty(&que) != true) {
+		for (int i = 1; i < m; i++) {
+			if (dequeue(&que, &getData) == true) {
+				enqueue(&que, getData);
+			}
+		}
+		if (dequeue(&que, &getData) == true) {
+			cout << getData << "  ";
+		}
+	}
+
+	destroyQueue(&que);
+	return 0;
+}
+
+bool createQueue(Queue* qp) {
+	if (qp == NULL) {
+		return false;
+	}
+	qp->head = new Node;
+	qp->tail = new Node;
+	if (qp->head != NULL && qp->tail != NULL) {
+		qp->head->next = qp->tail;
+		qp->tail->next = qp->tail;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool isQueueEmpty(Queue* qp) {
+	if (qp == NULL) {
+		return false;
+	}
+
+	if (qp->head->next == qp->tail) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool enqueue(Queue* qp, int n) {
+	if (qp == NULL) {
+		return false;
+	}
+	Node* curp;
+	Node* np;
+	np = new Node;
+	if (np != NULL) {
+		curp = qp->head;
+		while (curp->next != qp->tail) {
+			curp = curp->next;
+		}
+		curp->next = np;
+		np->next = qp->tail;
+		np->data = n;
+
+		return true;
+	}
+	else {
+		return false;
+	}
+	
+}
+
+bool dequeue(Queue* qp, int *deData) {
+	if (qp == NULL) {
+		return false;
+	}
+
+	if (isQueueEmpty(qp) == true) {
+		return false;
+	}
+
+	Node* curp;
+	curp = new Node;
+	if (curp != NULL) {
+		curp = qp->head->next;
+		*deData = curp->data;
+		qp->head->next = curp->next;
+
+		delete curp;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+void destroyQueue(Queue* qp) {
+	if (qp == NULL) {
+		return;
+	}
+
+	Node* curp;
+	curp = new Node;
+	curp = qp->head->next;
+
+	while (curp != qp->tail) {
+		qp->head->next = qp->head->next->next;
+		delete curp;
+		curp = qp->head->next;
+	}
+
+	delete qp->head;
+	delete qp->tail;
+	qp->head = qp->tail = NULL;
+}
