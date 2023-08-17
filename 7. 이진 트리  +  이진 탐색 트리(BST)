@@ -85,3 +85,334 @@ void FND(int n) {
 
 
 ==============================================================================================================================================================
+
+/* 연결리스트를 이용해 BST(이진 탐색 트리)구조 만들기 */
+
+#include <iostream>
+
+using namespace std;
+
+typedef struct _node Node;
+struct _node {
+	int data;
+	Node* left;
+	Node* right;
+};
+
+typedef struct _tree {
+	Node* root; // 루트노드 가리키는 포인터
+	int nodeCnt;
+}Tree;
+
+void initTree(Tree* tp); // 관리 구조체 생성
+Node* makeNode(int data, Node*,Node *); // 왼쪽 오른쪽 자식 받아서 새 노드만들고 그 주소 전달
+Node* addNode(Tree* tp, int data); // 만든 노드를 부모 밑에 추가
+void inorderTR(Node* tp); // 중위
+void preorderTR(Node* tp); // 전위
+void postorderTR(Node* tp); // 후위
+Node* searchNode(Tree* tp, int data);
+Node* deleteNode(Tree* tp, int data);
+void destroyNode(Tree* tp);
+void postorderDelete(Node* tp);
+
+
+
+
+
+
+int main() {
+	int ary[] = { 14, 25, 12, 18,16,15,5,23,7,17,3,13,6 };
+	int arysize = sizeof(ary) / sizeof(ary[0]);
+	Tree mytree;
+	Node* resp;
+	int searchData;
+	int deleteData;
+
+	initTree(&mytree);
+	for (int i = 0; i < arysize; i++) { // 배열에 있는 원소를 가지고 이진 트리 생성.
+		if (addNode(&mytree, ary[i]) == NULL) {
+			cout << "add Fail !" << endl;
+		}
+	}
+
+	/*  이후 작성  */
+	cout << "중위순회 결과:";
+	inorderTR(mytree.root);
+	cout << endl;
+
+	cout << "전위순회 결과:";
+	preorderTR(mytree.root);
+	cout << endl;
+
+	cout << "후위순회 결과:";
+	postorderTR(mytree.root);
+	cout << endl;
+
+	//노드 검색
+	cout << endl;
+	cout << "## 노드 검색" << endl;
+
+	searchData = 3;
+	resp = searchNode(&mytree, searchData);
+	if (resp != NULL) {
+		cout << resp->data << " 데이터를 찾음 !" << endl;
+	}
+	else {
+		cout << searchData << " 데이터 못찾음" << endl;
+	}
+
+
+	searchData = 39;
+	resp = searchNode(&mytree, searchData);
+	if (resp != NULL) {
+		cout << resp->data << " 데이터를 찾음 !" << endl;
+	}
+	else {
+		cout << searchData << " 데이터 못찾음" << endl;
+	}
+
+
+	searchData = 19;
+	resp = searchNode(&mytree, searchData);
+	if (resp != NULL) {
+		cout << resp->data << " 데이터를 찾음 !" << endl;
+	}
+	else {
+		cout << searchData << " 데이터 못찾음" << endl;
+	}
+
+
+	searchData = 23;
+	resp = searchNode(&mytree, searchData);
+	if (resp != NULL) {
+		cout << resp->data << " 데이터를 찾음 !" << endl;
+	}
+	else {
+		cout << searchData << " 데이터 못찾음" << endl;
+	}
+
+
+	//노드 삭제
+	cout << endl;
+	cout << "## 노드 삭제" << endl;
+
+	deleteData = 3;
+	resp = deleteNode(&mytree, deleteData);
+	if (resp != NULL) {
+		cout << deleteData << " 삭제 성공!" << endl;
+	}
+	else {
+		cout << deleteData << " 삭제 실패." << endl;
+	}
+
+	deleteData = 17;
+	resp = deleteNode(&mytree, deleteData);
+	if (resp != NULL) {
+		cout << deleteData << " 삭제 성공!" << endl;
+	}
+	else {
+		cout << deleteData << " 삭제 실패." << endl;
+	}
+
+	deleteData = 99;
+	resp = deleteNode(&mytree, deleteData);
+	if (resp != NULL) {
+		cout << deleteData << " 삭제 성공!" << endl;
+	}
+	else {
+		cout << deleteData << " 삭제 실패." << endl;
+	}
+
+
+	destroyNode(&mytree);
+	return 0;
+}
+
+
+
+
+
+
+void initTree(Tree* tp) {
+	tp->root = NULL;
+	tp->nodeCnt = 0;
+}
+
+Node* makeNode(int data, Node* left, Node* right) { // 노드를 만드는 틀 !
+	Node* np;
+	np = new Node;
+	if (np != NULL) {
+		np->data = data;
+		np->left = left;
+		np->right = right;
+	}
+	return np;
+}
+
+Node* addNode(Tree* tp, int data) {
+	Node* curp; // 말단 노드 저장 포인터 변수
+	Node* parent; // 부모 노드 저장 포인터 변수
+
+	Node* node = makeNode(data, NULL, NULL); // 틀을 이용해 실제로 붙일 노드를 제작.
+	if (node == NULL) {
+		return NULL;
+	}
+
+	/*root가 없다면 !*/
+	if (tp->root == NULL) {
+		tp->root = node; 
+	}
+	/*root가 있다면 !*/
+	else {
+		parent = curp = tp->root; // root부터 시작해서 밑으로 가면서 계속 비교할 것.
+		while (curp != NULL) { // NULL이 되면 왼쪽이나 오른쪽 자식이 없다는 것을 의미합니다.
+			parent = curp;
+			if (node->data < curp->data) {
+				curp = curp->left;
+			}
+			else {
+				curp = curp->right;
+			}
+		}
+		/* 여기까진 붙일 곳 탐색하는 과정 */
+
+		if (node->data < parent->data) {
+			parent->left = node;
+		}
+		else {
+			parent->right = node;
+		}
+		/* parent도 같이 만들어 놓음으로써, 마지막에 parent 밑에 left나 right 어디에 붙일지 대수비교하여 결정 */
+	}
+	tp->nodeCnt++;
+	return node;
+}
+
+void inorderTR(Node* tp) { // root 노드를 인자로 받을것임.
+	if (tp != NULL) {
+		inorderTR(tp->left);
+		cout << tp->data << " ";
+		inorderTR(tp->right);
+	}
+}
+
+void preorderTR(Node* tp) { // root 노드를 인자로 받을것임.
+	if (tp != NULL) {
+		cout << tp->data << " ";
+		preorderTR(tp->left);
+		preorderTR(tp->right);
+	}
+}
+
+void postorderTR(Node* tp) { // root 노드를 인자로 받을것임.
+	if (tp != NULL) {
+		postorderTR(tp->left);
+		postorderTR(tp->right);
+		cout << tp->data << " ";
+	}
+}
+
+
+Node* searchNode(Tree* tp, int data) {
+	Node* p;
+	p = tp->root;
+	while (p != NULL && p->data != data) {
+		if (p->data > data) {
+			p = p->left;
+		}
+		else {
+			p = p->right;
+		}
+	}
+	return p; // 찾았으면 찾은 노드의 주소, 못찾았으면 NULL을 반환함
+}
+
+Node* deleteNode(Tree* tp, int data) {
+	Node* del;
+	Node* parent;
+	Node* son;
+
+	del = new Node;
+	parent = del = son = tp->root;
+
+	/* ================== 1 단계 : 삭제할 노드 찾기 ================ */
+
+	while (del != NULL) {
+		if (del->data == data) {
+			break;
+		}
+		parent = del;
+		if (del->data > data) {
+			del = del->left;
+		}
+		else {
+			del = del->right;
+		}
+	}
+
+	if (del == NULL) { // 삭제할 노드 못찾았으면 널포인터 반환
+		return NULL;
+	}
+
+	/* ================== 2 단계 : 삭제할 노드의 son 찾기 ======================= */
+
+
+	if (del->right == NULL) {  // 유형 1. 삭제할 노드의 오른 자식이 없을 때 - 
+		son = del->left;
+	}
+	else if (del->right->left == NULL) { // 유형 2. 삭제할 노드의 오른 자식의 왼쪽자식이 없을 때 -
+		son = del->right;
+		son->left = del->left;
+	}
+	else { // 유형 3. 그 외 모든 경우 - 
+		Node* temp;
+		temp = del->right;
+		while (temp->left->left != NULL) {
+			temp = temp->left; // del과 가장 가까운 값을 오른쪽에서 찾기.
+		}
+		son = temp->left;
+		temp->left = son->right;
+		son->left = del->left;
+		son->right = del->right;
+	}
+
+	/* ==================== 3 단계 : son과 parent 연결하기 ================== */
+
+
+	if (del == tp->root) {
+		tp->root = son;
+	}
+	else if (parent->data < son->data) {
+		parent->right = son;
+	}
+	else {
+		parent->left = son;
+	}
+	
+	// ===================== 4 단계 : 삭제하기 ================================
+	if (del != NULL) {
+		delete del;
+		--tp->nodeCnt;
+		return del;  // 이미 삭제된 노드이지만, NULL은 아니므로 반환 가능
+	}
+	else {
+		return NULL;
+	}
+}
+
+void destroyNode(Tree* tp) {
+	postorderDelete(tp->root); // 데이터 노드는 순회하며 삭제. - 말단부터 올라오면서 삭제하는 구조.
+	tp->root = NULL;
+	tp->nodeCnt = 0;
+}
+
+void postorderDelete(Node* tp) {
+	if (tp != NULL) {
+		postorderTR(tp->left);
+		postorderTR(tp->right);
+		cout << tp->data << " ";
+		delete tp;
+	}
+	cout << endl;
+}
+
