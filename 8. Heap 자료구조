@@ -16,13 +16,16 @@ bool isHeapEmpty(Heap* hp);
 bool isHeapFull(Heap* hp);
 bool insertHeap(Heap* hp, int data);
 bool deleteHeap(Heap* hp, int* data);
-void upHeap(Heap* hp);
+void upHeap(Heap* hp, int child);
 void downHeap(Heap* hp);
-void printHeap(Heap* hp);
+void printHeap(const Heap* hp);
 void destroyHeap(Heap* hp);
 
+
+
+
 int main() {
-	int num;
+	int num; // inserHeap함수로 다 추가하고나면, 마지막으로 들어간 숫자가 있음.
 	int cnt;
 	Heap heap;
 	int i;
@@ -39,16 +42,22 @@ int main() {
 		inFile >> num;
 		insertHeap(&heap, num);
 	}
+	cout << "출력:";
 	printHeap(&heap);
 
-	for (i = 0; i <= cnt; i++) {
+	for (i = 1; i <= cnt; i++) {
 		deleteHeap(&heap, &num);
+		cout << "[" << num << "]  ";
 		printHeap(&heap);
 	}
 
 	destroyHeap(&heap);
 	return 0;
 }
+
+
+
+
 
 bool createHeap(Heap* hp, int size) {
 	if (hp == NULL) {
@@ -66,5 +75,136 @@ bool createHeap(Heap* hp, int size) {
 	}
 }
 
-bool isHeapEmpty(Heap* hp);
-bool isHeapFull(Heap* hp);
+bool isHeapEmpty(Heap* hp) {
+	if (hp == NULL) {
+		return false;
+	}
+	if (hp->count == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool isHeapFull(Heap* hp) {
+	if (hp == NULL) {
+		return false;
+	}
+	if (hp->size == hp->count) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool insertHeap(Heap* hp, int data) {
+	if (hp == NULL) {
+		return false;
+	}
+
+	if (isHeapFull(hp) == true) {
+		return false;
+	}
+	else {
+		hp->count++; // 이러면 배열의 1번 방부터 채워짐.(0번 방은 안쓸 것임.)
+		hp->heap[hp->count] = data;
+		upHeap(hp, hp->count);
+	}
+}
+
+void upHeap(Heap* hp, int child) {
+	int temp;
+	int parent;
+	if (hp == NULL) {
+		return;
+	}
+	while (child > 1) {
+		parent = child / 2;
+		if (hp->heap[child] >= hp->heap[parent]) {
+			break;
+		}
+		temp = hp->heap[parent];
+		hp->heap[parent] = hp->heap[child];
+		hp->heap[child] = temp;
+
+		child = parent;
+	}
+}
+
+bool deleteHeap(Heap* hp, int* data) {
+	if (hp == NULL) {
+		return false;
+	}
+
+	if (isHeapEmpty(hp) == true) {
+		return false;
+	}
+	else {
+		*data = hp->heap[1];
+		hp->heap[1] = hp->heap[hp->count];
+		hp->count--;
+		downHeap(hp);
+	}
+}
+
+void downHeap(Heap* hp) {
+	int parent = 1;
+	int Lchild, Rchild;
+	int temp;
+	int child;
+	
+	if (hp == NULL) {
+		return;
+	}
+	while (true) {
+		Lchild = parent * 2;
+		Rchild = (parent * 2) + 1;
+
+		if (Lchild > hp->count) { // 자식이 하나도 없으면
+			break;
+		}
+
+
+		if (Lchild == hp->count) { // 왼쪽 자식만 남았을 때 - 완전이진트리 유지해야함.
+			child = Lchild;
+		}
+		else if (hp->heap[Rchild] > hp->heap[Lchild]) {
+			child = Lchild;
+		}
+		else {
+			child = Rchild;
+		}
+		if (hp->heap[parent] <= hp->heap[child]) {
+			break;
+		}
+		
+		temp = hp->heap[parent];
+		hp->heap[parent] = hp->heap[child];
+		hp->heap[child] = temp;
+		parent = child;
+	}
+}
+
+void printHeap(const Heap* hp) {
+	if (hp == NULL) {
+		return;
+	}
+	for (int i = 1; i < hp->count+1; i++) {
+		cout << hp->heap[i]<< " ";
+	}
+	cout << endl;
+}
+
+void destroyHeap(Heap* hp) {
+	if (hp == NULL) {
+		return;
+	}
+
+	delete[] hp->heap;
+	hp->heap = NULL;
+	hp->size = 0;
+	hp->count = 0;
+
+}
