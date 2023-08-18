@@ -1,0 +1,70 @@
+/* 배열로 Heap 자료구조 만들기 */
+
+#include <iostream>
+#include <fstream>
+
+using namespace std;
+
+typedef struct _heap {
+	int* heap;
+	int size;
+	int count;
+}Heap;
+
+bool createHeap(Heap* hp, int size);
+bool isHeapEmpty(Heap* hp);
+bool isHeapFull(Heap* hp);
+bool insertHeap(Heap* hp, int data);
+bool deleteHeap(Heap* hp, int* data);
+void upHeap(Heap* hp);
+void downHeap(Heap* hp);
+void printHeap(Heap* hp);
+void destroyHeap(Heap* hp);
+
+int main() {
+	int num;
+	int cnt;
+	Heap heap;
+	int i;
+
+	ifstream inFile("heapData.txt"); // 각 컴퓨터에 저장된 텍스트 파일 입력
+	if (!inFile) {
+		cout << "파일을 열 수 없습니다." << endl;
+		return 1;
+	}
+
+	createHeap(&heap, 100);
+	inFile >> cnt;
+	for (i = 0; i < cnt; i++) {
+		inFile >> num;
+		insertHeap(&heap, num);
+	}
+	printHeap(&heap);
+
+	for (i = 0; i <= cnt; i++) {
+		deleteHeap(&heap, &num);
+		printHeap(&heap);
+	}
+
+	destroyHeap(&heap);
+	return 0;
+}
+
+bool createHeap(Heap* hp, int size) {
+	if (hp == NULL) {
+		return false;
+	}
+
+	hp->heap = new int[size + 1];
+	if (hp->heap != NULL) {
+		hp->size = size;
+		hp->count = 0;
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool isHeapEmpty(Heap* hp);
+bool isHeapFull(Heap* hp);
