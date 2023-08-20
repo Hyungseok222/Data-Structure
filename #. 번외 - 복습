@@ -1,0 +1,199 @@
+/* 이중 연결리스트로 Stack 구현하기 */
+
+#include <iostream>
+
+/* 스택 복습하기 - 연결리스트 사용 */
+
+using namespace std;
+
+typedef struct _node Node;
+struct _node {
+	int data;
+	Node* prev; // 전 노드 주소 받음
+	Node* next; // 다음 노드 주소 받음
+};
+
+typedef struct _stack {
+	Node* head;
+	Node* tail;
+}Stack;
+
+bool createStack(Stack* sp);
+bool isStackEmpty(Stack* sp);
+bool insertStack(Stack* sp, int inData);
+bool deleteStack(Stack* sp, int *deData); 
+void printStack(Stack* sp);
+void destroyStack(Stack* sp);
+
+
+
+
+int main() {
+	const string array[] = { "1. 입력하기","2. 삭제하기", "3. 출력하기", "4. 종 료" };
+	
+	Stack stack;
+	// createStack(&stack);
+	if (createStack(&stack) == true) {
+		cout << "# 스택 메모리 생성 성공 !" << endl;
+	}
+
+	int size = sizeof(array) / sizeof(array[0]); // 4
+	int num; // 받을 숫자 저장
+	int i;
+
+	for (i = 0; i < size; i++) {
+		cout << array[i] << endl;
+	}
+
+	while (true) {
+		cout << "원하는 동작 숫자 입력:";
+		cin >> num;
+
+		if (cin.fail()) {
+			break;
+		}
+
+		if (num == 1) {
+			while (true) {
+				int inNum;
+				cout << "추가할 수 입력( 0 입력시 종료 ):";
+				cin >> inNum;
+				if (inNum == 0) {
+					break;
+				}
+				insertStack(&stack, inNum);
+			}
+		}
+		else if (num == 2) {
+			int deData;
+			deleteStack(&stack, &deData);
+			cout << "[" << deData << "] 데이터가 삭제되었습니다." << endl;
+		}
+		else if (num == 3) {
+			printStack(&stack);
+		}
+		else {
+			break;
+		}
+	}
+
+	destroyStack(&stack);
+	return 0;
+}
+
+
+
+bool createStack(Stack* sp) {
+	if (sp == NULL) {
+		return false;
+	}
+
+	sp->head = new Node;
+	sp->tail = new Node;
+	if (sp->head == NULL || sp->tail == NULL) {
+		delete sp->head;
+		delete sp->tail;
+		return false;
+	}
+	else {
+		sp->head->prev = sp->head;
+		sp->head->next = sp->tail;
+		sp->tail->prev = sp->head;
+		sp->tail->next = sp->tail;
+		return true;
+	}
+}
+
+bool isStackEmpty(Stack* sp) {
+	if (sp == NULL) {
+		return false;
+	}
+	if (sp->head->next == sp->tail && sp->tail->prev == sp->head) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool insertStack(Stack* sp, int inData) {
+	if (sp == NULL) {
+		return false;
+	}
+
+	Node* curp;
+	curp = new Node; 
+	if (curp != NULL) {
+		curp->data = inData;
+		curp->prev = sp->head;
+		curp->next = sp->head->next;
+		sp->head->next = curp;
+
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+bool deleteStack(Stack* sp, int* deData) {
+	if (sp == NULL) {
+		return false;
+	}
+	Node* delp;
+	Node* np;
+	if (isStackEmpty(sp) == true) {
+		return false;
+	}
+	else {
+		delp = sp->head->next;
+		np = delp->next;
+		*deData = delp->data;
+		sp->head->next = np;
+		np->prev = sp->head;
+		delete delp;
+
+		return true;
+	}
+	
+}
+
+void printStack(Stack* sp) {
+	if (sp == NULL) {
+		return;
+	}
+	Node* curp;
+	curp = sp->head->next;
+	while (curp != sp->tail) {
+		cout << curp->data << " ";
+		curp = curp->next;
+	}
+	cout << endl;
+}
+
+void destroyStack(Stack* sp) {
+	if (sp == NULL) {
+		return;
+	}
+	Node* curp;
+	Node *np;
+	curp = sp->head->next;
+	
+	
+	while (curp != sp->tail) {
+		np = curp->next;
+		delete curp;
+		curp = np;
+	}
+
+	delete sp->head;
+	delete sp->tail;
+	sp->head = sp->tail = NULL;
+
+}
+
+
+
+
+
+=================================================================================================================================================================
